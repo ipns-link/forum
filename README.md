@@ -1,4 +1,5 @@
-# forum
-Discussions
+# IPNS-Link Forum
 
-Initial file, nothing to see here...
+## About
+
+This is the IPNS-Link Forum, this is where any discussions and plans can go regarding the project as a whole.

@@ -1,5 +1,9 @@
 # StarMap
 
+## Author
+
+[@LynHyper](https://github.com/LynHyper)
+
 ## Intro
 
 To further push the ability for anyone to host their site without cost, both to their freedoms and their wallets, Somaljit invisioned a way people could obtain domain names of the form `domain.ipns`.

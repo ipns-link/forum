@@ -36,7 +36,7 @@ Overseer 1's PubSub room
 There are two databases for IPDS:
 
 - Overseer IPDS Database [OID]
-- AN IPDS Database [RID]
+- AN IPDS Database [AID]
 
 The **OID** is for records signed and created by the Overseer of the PubSub room, these records are shown to the browser extension by default.
 

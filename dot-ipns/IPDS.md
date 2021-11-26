@@ -6,9 +6,9 @@
 
 ## IPDS Database
 
-IPDS uses a CRDT to prevent conflicts and consists of records of the form:
+IPDS uses a CRDT to prevent conflicts and consists of records in the form:
 
-`IPNS Address | domain.tld`
+`IPNS of Service/IPDS Database | domain.tld`
 
 If a record lacks a signature, or that signature cannot be verified by any trusted public keys, then the browser extension will ignore it.
 

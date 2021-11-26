@@ -6,7 +6,7 @@
 
 ## IPDS Database
 
-IPDS uses a CDRT to prevent conflicts and consists of records of the form:
+IPDS uses a CRDT to prevent conflicts and consists of records of the form:
 
 `IPNS Address | domain.tld`
 

@@ -31,6 +31,8 @@ Overseer 1's PubSub room
   |_ ...
 ```
 
+In the browser extension, you can define multiple PubSub rooms/Overseers in a particular order. In the event that multiple Overseer's rooms say that some domain `domain.tld` resolves to multiple different IPNS addresses, the PubSub room/Overseer at the top of the list will be trusted and it's record will be treated as the correct one amongst them.
+
 ## IPDS Database Types
 
 There are two databases for IPDS:

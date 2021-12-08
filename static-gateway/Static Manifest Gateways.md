@@ -49,7 +49,7 @@ ciphertext in multibase (base64, inline)
 
 Instead of encrypting the JSON with GPG and the public keys of gateways, you instead encrypt it with a user-defined password to be entered in the Manifest, this prevents random people from navigating to a Manifest and getting instant access to the Origin tied to it.
 
-To allow the Manifest to contact the Listener, a js-ipfs node is run within the Manifest and will decrypt the ciphertext to find the Listener. Once connected, PubSub messages will be sent between them.
+To allow the Manifest to contact the Listener, a js-ipfs node is run within the Manifest and will decrypt the ciphertext to find the Listener. Once connected, libp2p-stream data can be sent between them.
 
 The Browser then takes what the Origin sends and displays it within an `<iframe>`, this works for both static and dynamic applications running on the Origin, the user can now interact with the service exposed through the Origin.
 

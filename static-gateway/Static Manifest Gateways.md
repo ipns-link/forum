@@ -27,7 +27,7 @@ Manifests are added inline with IPNS-PubSub, however, they ideally need to be as
 
 #### index.html
 ```
-<src="CID of js-ipfs script/other link to js-ipfs script">...
+<script="CID of js-ipfs script/other link to js-ipfs script">...
 
 <input>Please enter the ciphertext password...</input>
 

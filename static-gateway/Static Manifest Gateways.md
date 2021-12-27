@@ -1,92 +1,53 @@
 # Static Manifest Gateways
 
-## Issues to Solve
+## Issues with Public IPNS-Link Gateways
 
-1. DNSLink lacks wildcard domains, so no `kid.ipns.static-gateway.tld`.
-2. `ipfs.io/ipns/gateway-cid/ipns/kid`, whether accessed directly or through a DNSLink like `gateway.tld/ipns/kid`, will fail with 404.
+- Public Gateways require a constantly running server.
+- They require a domain name to be publicly accessible.
+- They require the user to trust the Gateway's actions.
 
-However, what might work is:
+## Idea
 
-1. `gateway-cid.ipns.ipfs.io`
-2. `ipfs.io/ipns/gateway-cid`
+**Static Manifest Gateways** take advantage of Manifest files, Manifests are just HTML files which can be fetched over IPFS, so combining Manifests with Javascript and ServiceWorkers can give users publicly accessible Gateways which are serverless. 
 
-## Solution
+Since Static Gateways are actually Manifests, they already contain the necessary multiaddresses of the Listener, we can then use a js-ipfs node to connect to the Listener and access the Origin.
 
-Instead of a Gateway which redirects the Browser to a subdomain, we can have the Manifest act as a Static Gateway for just it's Origin, this removes the need for redirects and subdomains. This new type of Manifest is known as a **Static Manifest Gateway**.
+Here's a simple diagram to explain how this works:
 
-`Origin <-IPFS-> WAN <-IPFS-> Browser`
-
-1. Browser uses js-ipfs to connect to Origin over WSS.
-2. Origin and Browser communicate over libp2p-stream.
-3. Browser converts libp2p-stream data into a website within an `<iframe>`.
-4. User can access the Origin through the Browser.
-
-## Static Manifest Gateway
-
-Manifests are added inline with IPNS-PubSub, however, they ideally need to be as small as possible. To ensure Manifest's stay small, and to remove redundancy across Manifests, the `js-ipfs` code is stored in a separate `js-ipfs.js` file which can be hosted on IPFS or other sources.
-
-#### index.html
 ```
-<script="CID of js-ipfs script/other link to js-ipfs script">...
-
-<input>Please enter the ciphertext password...</input>
-
-<iframe>Origin's website here...</iframe>
-
-<!--IPNS-Link--
-ciphertext in multibase (base64, inline)
---IPNS-Link-->
+1. Browser -> 'kid.ipns.ipfs-gateway.tld' <-> IPFS <-> Publisher & Neighbouring Nodes
+2. Browser -> ServiceWorker + js-ipfs <-> Listener <-> Origin
 ```
 
-#### js-ipfs.js
-```
-<script>
+1. First, the Browser navigates to `kid.ipns.ipfs-gateway.tld`.
+2. The IPFS Gateway fetches Manifest from Publisher or it's neighbours.
+3. The Manifest then sources a Javascript file from IPFS, let's call it the **Gateway Script**.
+4. The Gateway Script creates a ServiceWorker and refreshes the page, essentially replacing the Manifest with what it wants to serve.
+5. A login page appears prompting the user to enter a password to decrypt the Manifest's ciphertext before refreshing again.
+6. The ServiceWorker then starts a js-ipfs node which connects to the Listener with the Manifest's multiaddresses.
+7. The ServiceWorker takes the HTTP output from the Origin and feeds it to the Browser, thus rendering the Origin as if it was accessed directly.
+8. The user can now access and interact with the Origin.
 
-  js-ipfs code here...
-
-</script>
-```
-
-Instead of encrypting the JSON with GPG and the public keys of gateways, you instead encrypt it with a user-defined password to be entered in the Manifest, this prevents random people from navigating to a Manifest and getting instant access to the Origin tied to it.
-
-To allow the Manifest to contact the Listener, a js-ipfs node is run within the Manifest and will decrypt the ciphertext to find the Listener. Once connected, libp2p-stream data can be sent between them.
-
-The Browser then takes what the Origin sends and displays it within an `<iframe>`, this works for both static and dynamic applications running on the Origin, the user can now interact with the service exposed through the Origin.
+Instead of encrypting the JSON with GPG and the public keys of gateways, you instead encrypt it with a user-defined password to be entered in the login page, this prevents random people from navigating to a Manifest and getting instant access to the Origin tied to it.
 
 # Summary
 
 ## Advantages
 
-- Static Manifest Gateways can be fetched by public IPFS Gateways or locally run IPFS Gateways.
-- IPFS Gateway's can't read what's sent between the Origin and Browser. The content of the `<iframe>` is also client-side only.
-- IPFS Gateway's won't suffer the bandwidth from the connection since the IPFS connection is peer-to-peer.
-- They are extremely difficult to block or censor.
-- The main functionality doesn't require any modifications or extensions for the Browser.
-- Manifest's can be kept minimal by sourcing the Javascript files from elsewhere (Ideally from IPFS when possible).
-- Manifest's can be themed per the user's liking to create a sort of pre-home page.
-- Query paramaters, only read by the JS code and not sent to the Origin, allow extra flexibility and can recover functionality such as by doing `http://gateway-cid.ipns.dweb.link/?url=/images/image1` to get resource URLs back.
+- Static Manifest Gateways can be fetched by Public IPFS Gateways for maximum accessibility, or they can be fetched by locally running IPFS nodes for maximum privacy. When IPFS nodes are common in Browsers then users can benefit from both advantages.
+- IPFS Gateway's can't see what the ServiceWorker presents to the user after the Manifest is first loaded, the connection between the js-ipfs node and Origin is also encrypted outside of the HTTPS connection.
+- IPFS Gateway's won't suffer the bandwidth from the connection since the js-ipfs connection is peer-to-peer.
+- They are extremely difficult to block or censor, all it takes is a one byte change and now the Static Manifest Gateway has a new CID.
+- The Browser doesn't need any modification or extension to allow Static Manifest Gateways to work.
+- Manifest's can stay minimal by sourcing the Javascript files from separate files (Ideally from IPFS when possible).
+- Manifest's can be themed per the user's liking to create pre-home, login-like pages. (Maybe **Static Exposer Gateways** could be explored?)
 
 ## Disadvantages
 
-- Malicious Public IPFS Gateways know what Manifest you are accessing and when unless extra precautions like VPNs are taken.
+- `kid.ipns.gateway.tld/images/image1` isn't possible, those request go to the IPFS Gateway, IPFS URLs must be used as a substitute.
+- Malicious Public IPFS Gateways can replace the Manifest with a malicious file, users need to trust the IPFS Gateway they access the Manifest over.
 
 ## Possible Improvements
 
-- Create custom javascript code to render the libp2p-stream data into a frame without the need for `<iframe>`.
-- Create a Static Gateway for the Exposer where the user can choose which Origin they want to access from a list of multiple `ID:` sections in the JSON. Note, we would need a way to prevent associating services to each other on top of this.
-- Make the Listener a Delegated Router for the js-ipfs node in the Browser to use, just as an extra option for the operator.
-
-## Resources for HTTP websites over WSS
-
-*This was my research into if websites can be displayed over a WebSocket connection, it didn't really lead me anywhere, but, I've included it anyways...*
-
-https://testdriven.io/blog/html-over-websockets/
-
-https://hexdocs.pm/phoenix_live_view/Phoenix.LiveView.html
-
-https://github.com/tanrax/demo-HTML-over-WebSockets-in-Django
-
-https://github.com/tani/hyper-tunnel
-
-https://github.com/arthurkushman/php-wss
-
+- Create Static Exposer Gateways where the user can choose which Origin they want to access.
+- Run a Delegated Router at the Origin for the js-ipfs node to use in case IPFS relative URLs can't be resolved in Browser or locally.

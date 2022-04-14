@@ -2,7 +2,7 @@
 
 ## Author
 
-[@LynHyper](https://github.com/LynHyper)
+[@Winterhuman](https://github.com/Winterhuman)
 
 ## Intro
 

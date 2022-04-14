@@ -15,11 +15,11 @@ Since Static Gateways are actually Manifests, they already contain the necessary
 Here's a simple diagram to explain how this works:
 
 ```
-1. Browser -> 'kid.ipns.ipfs-gateway.tld' <-> IPFS <-> Publisher & Neighbouring Nodes
+1. Browser -> 'oid.ipns.ipfs-gateway.tld' <-> IPFS <-> Publisher & Neighbouring Nodes
 2. Browser -> ServiceWorker + js-ipfs <-> Listener <-> Origin
 ```
 
-1. First, the Browser navigates to `kid.ipns.ipfs-gateway.tld`.
+1. First, the Browser navigates to `oid.ipns.ipfs-gateway.tld`.
 2. The IPFS Gateway fetches Manifest from Publisher or it's neighbours.
 3. The Manifest then sources a Javascript file from IPFS, let's call it the **Gateway Script**.
 4. The Gateway Script creates a ServiceWorker and refreshes the page, essentially replacing the Manifest with what it wants to serve.
@@ -44,7 +44,7 @@ Instead of encrypting the JSON with GPG and the public keys of gateways, you ins
 
 ## Disadvantages
 
-- `kid.ipns.gateway.tld/images/image1` isn't possible, those request go to the IPFS Gateway, IPFS URLs must be used as a substitute.
+- `oid.ipns.gateway.tld/images/image1` isn't possible, those request go to the IPFS Gateway, IPFS URLs must be used as a substitute.
 - Malicious Public IPFS Gateways can replace the Manifest with a malicious file, users need to trust the IPFS Gateway they access the Manifest over.
 
 ## Possible Improvements

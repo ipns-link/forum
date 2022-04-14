@@ -2,10 +2,10 @@
 
 In Manifests, we use encryption to hide the multiaddresses of the Listener from untrusted Gateways, this is to prevent malicious Gateways from spamming the Listener, however, it turns out that although the multiaddresses are hidden there's still a way an untrusted Gateway can access the Origin:
 
-1. User goes to `gateway.untrusted.tld` and searches for `kid`.
-2. The untrusted Gateway resolved the `kid` to find a Manifest with ciphertext it can't decrypt.
-3. The untrusted Gateway makes a request to `gateway.trusted.tld` as listed in the Manifest, the trusted Gateway then resolves the `kid` and provides the Origin at `kid.ipns.gateway.trusted.tld`.
-4. The untrusted Gateway proxies `kid.ipns.gateway.trusted.tld` for the user at `kid.ipns.gateway.untrusted.tld`, the user will have no idea that the untrusted Gateway didn't decrypt the ciphertext itself thus negating the purpose of the encryption.
+1. User goes to `gateway.untrusted.tld` and searches for `oid`.
+2. The untrusted Gateway resolved the `oid` to find a Manifest with ciphertext it can't decrypt.
+3. The untrusted Gateway makes a request to `gateway.trusted.tld` as listed in the Manifest, the trusted Gateway then resolves the `oid` and provides the Origin at `oid.ipns.gateway.trusted.tld`.
+4. The untrusted Gateway proxies `oid.ipns.gateway.trusted.tld` for the user at `oid.ipns.gateway.untrusted.tld`, the user will have no idea that the untrusted Gateway didn't decrypt the ciphertext itself thus negating the purpose of the encryption.
 
 This vulnerability isn't as bad as it first seems though, and, it's also completely unavoidable:
 
